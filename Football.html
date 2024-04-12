@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Football</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <style>
+        .twitter-widgets-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .twitter-widget {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+     <!-- Haut de Page -->
+     <header>
+        <img src="img/football.png" width="70">
+        <p>
+            <!-- Page de test (texte) -->
+        </p>
+    </header>
+
+   <!-- Menu de Navigation -->
+   <nav class="menu-nav-foot">
+    <ul>
+        <li class="Acfo">
+            <a href="index.html">
+                Accueil
+            </a>
+            
+        </li>
+        <li class="Bafo">
+            <a href=Basketbal.html>
+                Basketball
+            </a>
+
+        </li>
+        <li class="Fofo">
+            <a href=Football.html>
+                Football
+            </a>
+            
+
+            
+        </li>
+
+        <li class="F1fo">
+            <a href=f1.html>
+                Formule 1
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+    <!-- Widgets Twitter côte à côte -->
+    <div class="twitter-widgets-container">
+        <section class="twitter-widget" id="twitter-widget-left">
+            <a class="twitter-timeline" data-width="500" data-height="700" href="https://twitter.com/staderennais">Tweets by staderennais</a>
+        </section>
+
+        <section class="twitter-widget" id="twitter-widget-right">
+            <a class="twitter-timeline" data-width="500" data-height="700" href="https://twitter.com/Ligue1UberEats">Tweets by Ligue1UberEats</a>
+        </section>
+    </div>  
+
+     <!-- Dernier tweet du Stade Rennais -->
+     <section>
+        <div id="latest-tweet"></div>
+    </section>
+
+    <script>
+        // Fonction pour récupérer le dernier tweet du Stade Rennais
+        function getLatestTweet() {
+            fetch('https://api.twitter.com/2/tweets/search/recent?query=from:Enzo_Slim7', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer 1332644913444433922-KDidEAYk1pWJZ7v9Ps8a6ZfDddqDPd' // Remplacez VOTRE_ACCESS_TOKEN par votre véritable jeton d'accès Twitter
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const latestTweet = data.data[0];
+                const tweetContainer = document.getElementById('latest-tweet');
+
+                // Créez un élément tweet à partir des données obtenues
+                const tweetElement = document.createElement('div');
+                tweetElement.innerHTML = `<blockquote class="twitter-tweet" data-conversation="none" data-theme="light"><p lang="fr" dir="ltr">${latestTweet.text}</p>&mdash; ${latestTweet.author.username} (@${latestTweet.author.username}) <a href="https://twitter.com/${latestTweet.author.username}/status/${latestTweet.id}" rel="nofollow">${latestTweet.created_at}</a></blockquote>`;
+                
+                // Ajoutez l'élément tweet au conteneur
+                tweetContainer.appendChild(tweetElement);
+
+                // Chargez le script Twitter pour rendre le tweet intégré interactif
+                twttr.widgets.load();
+            })
+            .catch(error => console.error('Erreur lors de la récupération du dernier tweet :', error));
+        }
+
+        // Appel de la fonction pour récupérer le dernier tweet au chargement de la page
+        getLatestTweet();
+    </script>
+
+    <!-- Pied de Page -->
+    <footer>
+        <p>
+            2022-2023 - All Right Reserved
+        </p>
+    </footer>
+
+</body>
+</html>
