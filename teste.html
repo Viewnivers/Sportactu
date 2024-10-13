@@ -197,63 +197,75 @@
 
 
 
-        <!-- JavaScript pour le minuteur et les résultats -->
+        let countdownInterval;
 
-    let countdownInterval;
+function startCountdown(grandPrixDate, grandPrixLocation) {
+    const targetDate = new Date(grandPrixDate);  // Date et heure de la course
+    const targetTimeMillis = targetDate.getTime();
 
-    function startCountdown(grandPrixDate, grandPrixLocation) {
-        const targetDate = new Date(grandPrixDate);  // Date et heure de la course
-        const targetTimeMillis = targetDate.getTime();
+    // Vérifier que la date est valide
+    if (isNaN(targetTimeMillis)) {
+        console.error("La date du Grand Prix n'est pas valide :", grandPrixDate);
+        document.getElementById("grandPrixLocation").textContent = "Date de course invalide.";
+        return;
+    }
 
-        if (countdownInterval) {
-            clearInterval(countdownInterval);  // Si un chrono est déjà en cours, on le supprime
+    if (countdownInterval) {
+        clearInterval(countdownInterval);  // Si un chrono est déjà en cours, on le supprime
+    }
+
+    countdownInterval = setInterval(() => {
+        const currentTime = new Date().getTime();
+        const remainingTimeMillis = targetTimeMillis - currentTime;
+
+        if (remainingTimeMillis <= 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("grandPrixLocation").textContent = "La course a commencé !";
+        } else {
+            const days = Math.floor(remainingTimeMillis / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTimeMillis % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Mettre à jour l'interface utilisateur
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("mins").textContent = minutes;
+            document.getElementById("grandPrixLocation").textContent = `Prochain Grand Prix : ${grandPrixLocation}`;
+            document.getElementById("startDateTime").textContent = `Début à : ${targetDate.toLocaleString()}`;
         }
+    }, 1000);
+}
 
-        countdownInterval = setInterval(() => {
-            const currentTime = new Date().getTime();
-            const remainingTimeMillis = targetTimeMillis - currentTime;
+function fetchNextRace() {
+    fetch('https://ergast.com/api/f1/current.json')
+        .then(response => response.json())
+        .then(data => {
+            const races = data.MRData.RaceTable.Races;
+            const now = new Date();
+            let nextRaceFound = false;
 
-            if (remainingTimeMillis <= 0) {
-                clearInterval(countdownInterval);
-                document.getElementById("grandPrixLocation").textContent = "La course a commencé !";
-            } else {
-                const days = Math.floor(remainingTimeMillis / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((remainingTimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((remainingTimeMillis % (1000 * 60 * 60)) / (1000 * 60));
+            for (let race of races) {
+                const raceDate = new Date(`${race.date}T${race.time}Z`);  // Ajout du "Z" pour UTC
 
-                // Mettre à jour l'interface utilisateur
-                document.getElementById("days").textContent = days;
-                document.getElementById("hours").textContent = hours;
-                document.getElementById("mins").textContent = minutes;
-                document.getElementById("grandPrixLocation").textContent = `Prochain Grand Prix : ${grandPrixLocation}`;
-                document.getElementById("startDateTime").textContent = `Début à : ${targetDate.toLocaleString()}`;
+                // Vérifier si la course est valide
+                if (isNaN(raceDate.getTime())) {
+                    console.error("La date de la course n'est pas valide :", race);
+                    continue;  // Passer à la prochaine course si la date n'est pas valide
+                }
+
+                if (raceDate > now) {
+                    startCountdown(raceDate, race.raceName);
+                    nextRaceFound = true;
+                    break;  // Arrêter la boucle dès qu'une prochaine course est trouvée
+                }
             }
-        }, 1000);
-    }
 
-    function fetchNextRace() {
-        fetch('https://ergast.com/api/f1/current.json')
-            .then(response => response.json())
-            .then(data => {
-                const races = data.MRData.RaceTable.Races;
-                const now = new Date();
-                let nextRaceFound = false;
-
-                for (let race of races) {
-                    const raceDate = new Date(`${race.date}T${race.time}Z`);  // Ajout du "Z" pour UTC
-                    if (raceDate > now) {
-                        startCountdown(raceDate, race.raceName);
-                        nextRaceFound = true;
-                        break;  // Arrêter la boucle dès qu'une prochaine course est trouvée
-                    }
-                }
-
-                if (!nextRaceFound) {
-                    document.getElementById("grandPrixLocation").textContent = "Aucune course future disponible.";
-                }
-            })
-            .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
-    }
+            if (!nextRaceFound) {
+                document.getElementById("grandPrixLocation").textContent = "Aucune course future disponible.";
+            }
+        })
+        .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
+}
 
 
 
