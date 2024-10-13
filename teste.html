@@ -197,8 +197,8 @@
 
 
 
-        function startCountdown(grandPrixDate, grandPrixLocation) {
-    const targetDate = new Date(grandPrixDate);  // Assurez-vous que la date est UTC
+     function startCountdown(grandPrixDate, grandPrixLocation) {
+    const targetDate = new Date(grandPrixDate);  // Date et heure de la course
     const targetTimeMillis = targetDate.getTime();
 
     const countdownInterval = setInterval(() => {
@@ -231,8 +231,7 @@ function fetchNextRace() {
             const now = new Date();
 
             for (let race of races) {
-                // Assurez-vous que le format de l'heure est bien UTC en ajoutant "Z"
-                const raceDate = new Date(`${race.date}T${race.time}Z`);
+                const raceDate = new Date(`${race.date}T${race.time}`);
                 if (raceDate > now) {
                     startCountdown(raceDate, race.raceName);
                     break;
@@ -242,8 +241,7 @@ function fetchNextRace() {
         .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
 }
 
-// Appel initial pour démarrer le chrono avec la prochaine course
-fetchNextRace();
+
 
 
         function fetchRaceList() {
