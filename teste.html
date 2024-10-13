@@ -241,7 +241,8 @@ function fetchNextRace() {
         .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
 }
 
-
+// Appel initial pour démarrer le chrono avec la prochaine course
+fetchNextRace();
 
 
         function fetchRaceList() {
