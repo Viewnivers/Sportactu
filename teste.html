@@ -207,7 +207,7 @@
         ];
 
         const grandPrixLocations = [
-            "Abou Dabi",
+            "YOUPI",
         ];
 
         let currentGrandPrix = 0;
@@ -282,7 +282,7 @@
         }
         
         function fetchRaceList() {
-            fetch('http://ergast.com/api/f1/current.json')
+            fetch('https://ergast.com/api/f1/current.json')
                 .then(response => response.json())
                 .then(data => {
                     const raceSelector = document.getElementById('raceSelector');
@@ -317,7 +317,8 @@
         }
 
         function fetchAndDisplayResults(round) {
-    const apiUrl = `http://ergast.com/api/f1/2023/${round}/results.json`;
+            const apiUrl = `https://ergast.com/api/f1/2024/${round}/results.json`;
+
 
     fetch(apiUrl)
         .then(response => response.json())
