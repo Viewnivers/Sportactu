@@ -197,17 +197,23 @@
 
 
 
-     function startCountdown(grandPrixDate, grandPrixLocation) {
+        let countdownInterval;  // Déclarer une variable globale pour l'intervalle du chrono
+
+function startCountdown(grandPrixDate, grandPrixLocation) {
     const targetDate = new Date(grandPrixDate);  // Date et heure de la course
     const targetTimeMillis = targetDate.getTime();
 
-    const countdownInterval = setInterval(() => {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);  // Si un chrono est déjà en cours, on le supprime pour éviter les doublons
+    }
+
+    countdownInterval = setInterval(() => {
         const currentTime = new Date().getTime();
         const remainingTimeMillis = targetTimeMillis - currentTime;
 
         if (remainingTimeMillis <= 0) {
             clearInterval(countdownInterval);
-            alert("La course a commencé !");
+            document.getElementById("grandPrixLocation").textContent = "La course a commencé !";
         } else {
             const days = Math.floor(remainingTimeMillis / (1000 * 60 * 60 * 24));
             const hours = Math.floor((remainingTimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -247,9 +253,9 @@ function fetchNextRace() {
         .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
 }
 
-
 // Appel initial pour démarrer le chrono avec la prochaine course
 fetchNextRace();
+
 
 
         function fetchRaceList() {
