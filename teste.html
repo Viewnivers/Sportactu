@@ -197,71 +197,52 @@
 
 
 
-        let countdownInterval;
-        const timerElement = document.getElementById("timer");
-        const grandPrixLocationElement = document.getElementById("grandPrixLocation");
-        const startDateTimeElement = document.getElementById("startDateTime");
-
-        const grandPrixDates = [
-            new Date("2024-10-20T07:00:00"),
-        ];
-
-        const grandPrixLocations = [
-            "YOUPI",
-        ];
-
-        let currentGrandPrix = 0;
-
-       function startCountdown() {
-    const targetDate = grandPrixDates[currentGrandPrix];
-    const targetLocation = grandPrixLocations[currentGrandPrix];
-
-    const now = new Date();
-    const currentTime = now.getTime();
+        function startCountdown(grandPrixDate, grandPrixLocation) {
+    const targetDate = new Date(grandPrixDate);  // Date et heure de la course
     const targetTimeMillis = targetDate.getTime();
 
-    if (currentTime >= targetTimeMillis) {
-        currentGrandPrix++;
-        if (currentGrandPrix >= grandPrixDates.length) {
-            alert("Tous les Grands Prix sont terminés.");
-            return;
-        }
-        startCountdown(); // Appel récursif pour passer au prochain Grand Prix
-    }
-
-    const remainingTimeMillis = targetTimeMillis - currentTime;
-    countdownInterval = setInterval(() => {
+    const countdownInterval = setInterval(() => {
         const currentTime = new Date().getTime();
         const remainingTimeMillis = targetTimeMillis - currentTime;
 
         if (remainingTimeMillis <= 0) {
             clearInterval(countdownInterval);
-            startCountdown(); // Passer au prochain Grand Prix une fois terminé
+            alert("La course a commencé !");
         } else {
-            const days = Math.floor(remainingTimeMillis / 86400000);
-            const hours = Math.floor((remainingTimeMillis % 86400000) / 3600000);
-            const minutes = Math.floor((remainingTimeMillis % 3600000) / 60000);
-            const seconds = Math.floor((remainingTimeMillis % 60000) / 1000);
+            const days = Math.floor(remainingTimeMillis / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTimeMillis % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTimeMillis % (1000 * 60)) / 1000);
 
-            // Mettre à jour le tableau
-            const daysElement = document.getElementById("days");
-            const hoursElement = document.getElementById("hours");
-            const minutesElement = document.getElementById("mins");
-
-            daysElement.textContent = days;
-            hoursElement.textContent = hours;
-            minutesElement.textContent = minutes;
-
-            const targetYear = targetDate.getFullYear();
-            const targetMonth = targetDate.getMonth();
-            const targetDay = targetDate.getDate();
-            const targetHour = targetDate.getHours();
-            const targetMinute = targetDate.getMinutes();
-            startDateTimeElement.textContent = `Heure de début : ${targetDay}/${targetMonth + 1}/${targetYear} - ${targetHour}:${targetMinute}`;
-            grandPrixLocationElement.textContent = `Grand Prix à : ${targetLocation}`;
+            // Mettre à jour l'interface utilisateur
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = hours;
+            document.getElementById("mins").textContent = minutes;
+            document.getElementById("grandPrixLocation").textContent = `Prochain Grand Prix : ${grandPrixLocation}`;
         }
     }, 1000);
 }
+
+function fetchNextRace() {
+    fetch('https://ergast.com/api/f1/current.json')
+        .then(response => response.json())
+        .then(data => {
+            const races = data.MRData.RaceTable.Races;
+            const now = new Date();
+
+            for (let race of races) {
+                const raceDate = new Date(`${race.date}T${race.time}`);
+                if (raceDate > now) {
+                    startCountdown(raceDate, race.raceName);
+                    break;
+                }
+            }
+        })
+        .catch(error => console.error('Erreur lors de la récupération des informations de la course :', error));
+}
+
+// Appel initial pour démarrer le chrono avec la prochaine course
+fetchNextRace();
 
 
         function fetchRaceList() {
