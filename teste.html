@@ -204,11 +204,9 @@
 
         const grandPrixDates = [
             new Date("2024-10-20T07:00:00"),
-            new Date("2023-11-26T14:00:00"),
         ];
 
         const grandPrixLocations = [
-            "Phase de Test",
             "Abou Dabi",
         ];
 
@@ -267,7 +265,7 @@
 
 
         function fetchRaceList() {
-            fetch('http://ergast.com/api/f1/current.json')
+            fetch('https://ergast.com/api/f1/current.json')
                 .then(response => response.json())
                 .then(data => {
                     const raceSelector = document.getElementById('raceSelector');
