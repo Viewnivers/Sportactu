@@ -198,7 +198,7 @@
 
 
         function fetchNextRace() {
-        fetch('https://ergast.com/api/f1/2024.json')  // Récupérer les courses de 2024
+        fetch('https://ergast.com/api/f1/current.json')  // Récupérer les courses de 2024
             .then(response => response.json())
             .then(data => {
                 const races = data.MRData.RaceTable.Races;
